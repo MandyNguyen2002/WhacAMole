@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  grid-template-rows: repeat(3, 200px);
+  gap: 10px;
+  margin: 20px 0;
+}
+.header {
+  text-align: center;
+  margin: 20px auto;
+}
+.header .title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.score-text {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#start-btn {
+  padding: 5px 10px;
+  margin-bottom: 20px;
+}
+.timer {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  grid-template-rows: repeat(3, 200px);
+  gap: 10px;
+  width: 830px;
+  margin: 20px auto;
+}
+.hole {
+  width: 200px;
+  height: 200px;
+  border: 2px solid brown;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
