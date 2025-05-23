@@ -7,6 +7,7 @@ const Model = (() => {
     board = Array.from({ length: 12 }, (_, i) => ({
       id: i,
       hasMole: false,
+      hasSnake: false,
     }));
   }
 
@@ -42,9 +43,11 @@ const Model = (() => {
 
 const View = (() => {
   function renderBoard(board) {
-    const imgs = document.querySelectorAll(".hole img");
+    const moleImgs = document.querySelectorAll(".hole .mole");
+    const snakeImgs = document.querySelectorAll(".hole .snake");
     board.forEach((hole, i) => {
-      imgs[i].style.visibility = hole.hasMole ? "visible" : "hidden";
+      moleImgs[i].style.visibility = hole.hasMole ? "visible" : "hidden";
+      snakeImgs[i].style.visibility = hole.hasSnake ? "visible" : "hidden";
     });
   }
   function renderScore(score) {
@@ -57,7 +60,11 @@ const View = (() => {
     renderScore(0);
     renderTimer(30);
     renderBoard(
-      Array.from({ length: 12 }, (_, i) => ({ id: i, hasMole: false }))
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        hasMole: false,
+        hasSnake: false,
+      }))
     );
   }
   return {
@@ -71,10 +78,12 @@ const View = (() => {
 const Controller = ((model, view) => {
   let moleInterval = null;
   let timerInterval = null;
+  let snakeInterval = null;
 
   function startGame() {
     clearInterval(timerInterval);
     clearInterval(moleInterval);
+    clearInterval(snakeInterval);
 
     model.createBoard();
     model.setScore(0);
@@ -89,6 +98,7 @@ const Controller = ((model, view) => {
       if (t <= 0) {
         clearInterval(timerInterval);
         clearInterval(moleInterval);
+        clearInterval(snakeInterval);
         alert("Time is Over!");
       }
     }, 1000);
@@ -103,9 +113,20 @@ const Controller = ((model, view) => {
           const moleId = emptyHoles[randomIdx].id;
           board[moleId].hasMole = true;
           view.renderBoard(board);
+          setTimeout(() => {
+            board[moleId].hasMole = false;
+            view.renderBoard(board);
+          }, 2000);
         }
       }
     }, 1000);
+
+    snakeInterval = setInterval(() => {
+      model.getBoard().forEach((hole) => (hole.hasSnake = false));
+      const rand = Math.floor(Math.random() * 12);
+      model.getBoard()[rand].hasSnake = true;
+      view.renderBoard(model.getBoard());
+    }, 2000);
   }
 
   function addHoleListeners() {
@@ -113,6 +134,18 @@ const Controller = ((model, view) => {
       hole.addEventListener("click", function () {
         const holeId = Number(this.getAttribute("data-id"));
         const board = model.getBoard();
+
+        if (board[holeId].hasSnake) {
+          board.forEach((hole) => (hole.hasSnake = true));
+          view.renderBoard(board);
+
+          clearInterval(timerInterval);
+          clearInterval(moleInterval);
+          clearInterval(snakeInterval);
+          alert("Game Over!");
+          return;
+        }
+
         if (board[holeId].hasMole) {
           board[holeId].hasMole = false;
           model.setScore(model.getScore() + 1);
